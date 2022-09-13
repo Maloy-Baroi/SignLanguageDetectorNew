@@ -1,1 +1,1 @@
-# SignLanguageDetectorNew
+# signLang

@@ -1,0 +1,142 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.js" integrity="sha512-+tu0+vUXyZX+S51npa//IN6znNTLZsBoy8mXn9WzHxfBqYMy6gOzzfTK0VqZf9O171RY9AJviHDokCnvEq8+1A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.3.1/p5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/IDMNYU/p5.js-speech@0.0.3/lib/p5.speech.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/addons/p5.sound.js" integrity="sha512-TU9AWtV5uUZPX8dbBAH8NQF1tSdigPRRT82vllAQ1Ke28puiqLA6ZVKxtUGlgrH6yWFnkKy+sE6luNEGH9ar0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <title>Sign Language Detector</title>
+    <style>
+      .navbar {
+        background: #79589f !important;
+        color: #fff !important;
+      }
+
+      #id-image {
+          text-align: center;
+      }
+
+      #id-speech-image {
+          width: 80%;
+          height: 450px;
+          margin-top: 10px;
+      }
+
+      #record-btn {
+        display: none;
+      }
+
+      .nav-link {
+        color: #fff;
+        font-weight: bold !important;
+      }
+
+      .nav-link:hover {
+        color: #2f2f2f !important;
+        background: #fff !important;
+        border: 1px solid #fff !important;
+        border-radius: 30px !important;
+      }
+
+      .active {
+        color: #fff !important;
+        border: 1px solid #fff !important;
+        border-radius: 30px !important;
+      }
+    </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="{% url 'App_main:sign-to-text' %}">
+              Sign to text
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="{% url 'App_main:speech-to-sign' %}">
+              Speech to Sign
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <button id="record-btn" class='btn btn-primary' onclick="setup()">
+    Record
+  </button>
+  <div class="row">
+      <div class="col-md-2"></div>
+      <div class="col-md-8">
+          <div id="id-image">
+              <img id='id-speech-image' src='{% static 'images/no-sound.jpg' %}' alt='No Sound'>`
+          </div>
+      </div>
+      <div class="col-md-2"></div>
+  </div>
+  <script>
+    let img = document.getElementById('id-speech-image');
+    let record_btn = document.getElementById('record-btn');
+    let lang = navigator.language || 'en-US';
+    let speechRec;
+    let even_odd = 0;
+    function setup() {
+      img.src = '{% static "images/listening.png" %}';
+      speechRec = new p5.SpeechRec(lang, gotSpeech);
+      
+      speechRec.start();
+
+      function gotSpeech() {
+        collectedSpeech = speechRec.resultString;
+        thisString = collectedSpeech.toLowerCase();
+        console.log(thisString);
+        even_odd += 1;
+        if (thisString === 'hello' || thisString === 'hi') {
+            img.src = '{% static "signImages/Hello.jpg" %}';
+        }
+        else if (thisString==='assalamu alaikum') {
+            img.src = '{% static "signImages/assalamu_alaikum.jpg" %}';            
+        }
+        else if (thisString==='no') {
+            img.src = '{% static "signImages/No.jpg" %}';            
+        }
+        else if (thisString==='yes') {
+          img.src = '{% static "signImages/yes_by_rifat.jpg" %}';      
+        }
+        else if (thisString==='thank you') {
+            img.src = '{% static "signImages/thankYou_by_rifat.jfif" %}';            
+        }
+        else if (thisString==='family') {
+            img.src = '{% static "signImages/Family.jpg" %}';            
+        }
+        else if (thisString==='please') {
+          img.src = '{% static "signImages/please_by_rifat.jfif" %}';            
+        }
+        else if (thisString==='help') {
+          img.src = '{% static "signImages/Help.jpg" %}';            
+        }
+        else {
+          record_btn.click();
+        }
+      }
+  }
+  setInterval(
+    function() {
+      record_btn.click();
+    }
+    , 5000);
+  </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+</body>
+</html>
